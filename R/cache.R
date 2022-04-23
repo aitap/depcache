@@ -1,3 +1,5 @@
+.debug <- function(expr) if (getOption('cacheR.debug', FALSE)) expr
+
 do.cache <- function(
 	expr, frame, skip, extra,
 	cache.dir = getOption('cacheR.dir', '.cache'),
@@ -6,10 +8,18 @@ do.cache <- function(
 ) {
 	dir.create(cache.dir, showWarnings = FALSE)
 	stopifnot(dir.exists(cache.dir))
-	filename <- hash(
-		list(expr, depends(expr, frame, skip), extra), version
-	)
+
+	deps <- depends(expr, frame, skip)
+
+	filename <- hash(list(expr, deps, extra), version)
 	rds <- paste0(file.path(cache.dir, filename), '.rds')
+
+	.debug({
+		message('Expr: ', deparse(expr))
+		cat('Deps:\n'); print(sapply(deps, hash, version))
+		message(rds, ' ', if (file.exists(rds)) 'found' else 'not found')
+	})
+
 	tryCatch(
 		suppressWarnings(readRDS(rds)),
 		error = function(e) {
@@ -21,4 +31,4 @@ do.cache <- function(
 }
 
 cache <- function(expr, skip = NULL, extra = NULL, ...)
-	do.cache(substitute(expr), parent.frame(), skip, ...)
+	do.cache(substitute(expr), parent.frame(), skip, extra, ...)

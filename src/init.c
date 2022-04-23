@@ -7,6 +7,7 @@ static R_CallMethodDef call_methods[] = {
 	{"weakrefkey", (DL_FUNC)&weakrefkey, 1},
 	{"weakrefval", (DL_FUNC)&weakrefval, 1},
 	{"env_addr",   (DL_FUNC)&env_addr,   1},
+	{"hash",       (DL_FUNC)&hash,       2},
 	{NULL, NULL, 0}
 };
 

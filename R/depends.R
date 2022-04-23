@@ -1,4 +1,4 @@
-dependencies <- function(expr, frame, skip) {
+depends <- function(expr, frame, skip) {
 	# any symbol in the expression can be a dependency
 	symbols <- unname(unlist(walkCode(
 		expr, makeCodeWalker(

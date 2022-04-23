@@ -7,6 +7,7 @@
 SEXP env_addr(SEXP env);
 
 /* fnv1a64.c */
+SEXP hash(SEXP val, SEXP sver);
 void fnv1a64(
 	char const * const * text, const int * ntext, unsigned char hash[sizeof(uint64_t)]
 );
