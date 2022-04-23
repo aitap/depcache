@@ -1,4 +1,10 @@
-.debug <- function(expr) if (getOption('cacheR.debug', FALSE)) expr
+# TODO: test the output of this function for existence of file in
+# various circumstances
+get.filename <- function(expr, frame, skip, extra, cache.dir, version) {
+	deps <- dependencies(expr, frame, skip)
+	filename <- hash(list(expr, deps, extra), version)
+	paste0(file.path(cache.dir, filename), '.rds')
+}
 
 do.cache <- function(
 	expr, frame, skip, extra,
@@ -6,19 +12,12 @@ do.cache <- function(
 	compress = getOption('cacheR.rds.compress', TRUE),
 	version = getOption('cacheR.ser.version', 2)
 ) {
+	stopifnot(as.integer(version) %in% 2L:3L)
+
 	dir.create(cache.dir, showWarnings = FALSE)
 	stopifnot(dir.exists(cache.dir))
 
-	deps <- depends(expr, frame, skip)
-
-	filename <- hash(list(expr, deps, extra), version)
-	rds <- paste0(file.path(cache.dir, filename), '.rds')
-
-	.debug({
-		message('Expr: ', deparse(expr))
-		cat('Deps:\n'); print(sapply(deps, hash, version))
-		message(rds, ' ', if (file.exists(rds)) 'found' else 'not found')
-	})
+	rds <- get.filename(expr, frame, skip, extra, cache.dir, version)
 
 	tryCatch(
 		suppressWarnings(readRDS(rds)),
