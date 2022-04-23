@@ -1,5 +1,5 @@
 # TODO: test the output of this function to make sure "skip" is taken
-# into account, none of the primitives are picked up
+# into account, none of the undesirables are picked up
 
 dependencies <- function(expr, frame, skip) {
 	# any symbol in the expression can be a dependency
@@ -13,12 +13,18 @@ dependencies <- function(expr, frame, skip) {
 	)))
 
 	# except the ones we're explicitly told not to hash
+	# calls unique for us too
 	symbols <- setdiff(symbols, skip)
-	# primitives won't change, so ignore them; also, skip missing variables
-	Filter(
-		function(x) !is.null(x) && !is.primitive(x),
-		mget(
-			symbols, frame, ifnotfound = list(NULL), inherits = TRUE
-		)
+
+	values <- mget(
+		symbols, frame, ifnotfound = list(NULL), inherits = TRUE
 	)
+	# skip missing values, primitives, non-local functions
+	ret <- Filter(
+		function(n)
+			!is.null(values[[n]]) && !is.primitive(values[[n]]) &&
+			(!is.function(values[[n]]) || exists(n, envir = frame, inherits = FALSE)),
+		symbols
+	)
+	values[ret]
 }
