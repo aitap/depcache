@@ -1,5 +1,4 @@
-hash <- function(text) {
-	text <- as.character(text)
-	hash <- .C(C_fnv1a64, text = text, ntext = length(text), hash = raw(8))$hash
+hash <- function(value, version) {
+	hash <- .Call(C_hash, value, version)
 	paste(as.hexmode(as.integer(hash)), collapse = '')
 }

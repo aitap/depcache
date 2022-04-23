@@ -1,12 +1,12 @@
 do.cache <- function(
 	expr, frame,
 	cache.dir = getOption('cacheR.dir', '.cache'),
-	version = getOption('cacheR.rds.version', 2),
-	compress = getOption('cacheR.rds.compress', TRUE)
+	compress = getOption('cacheR.rds.compress', TRUE),
+	version = getOption('cacheR.ser.version', 2)
 ) {
 	dir.create(cache.dir, showWarnings = FALSE)
 	stopifnot(dir.exists(cache.dir))
-	rds <- paste0(file.path(cache.dir, hash(deparse(expr))), '.rds')
+	rds <- paste0(file.path(cache.dir, hash(expr, version)), '.rds')
 	tryCatch(
 		suppressWarnings(readRDS(rds)),
 		error = function(e) {
