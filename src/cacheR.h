@@ -8,10 +8,6 @@ SEXP env_addr(SEXP env);
 
 /* fnv1a64.c */
 SEXP hash(SEXP val, SEXP sver);
-void fnv1a64(
-	char const * const * text, const int * ntext, unsigned char hash[sizeof(uint64_t)]
-);
-#define fnv1a64_TYPES { STRSXP, INTSXP, RAWSXP }
 
 /* weakref.c */
 SEXP weakref(SEXP key, SEXP val, SEXP fin, SEXP onexit);

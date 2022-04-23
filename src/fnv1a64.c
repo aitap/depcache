@@ -79,16 +79,3 @@ SEXP hash(SEXP value, SEXP sver) {
 	UNPROTECT(1);
 	return ret;
 };
-
-void fnv1a64(
-	char const * const * text, const int * ntext, unsigned char hash[sizeof(uint64_t)]
-) {
-	uint64_t ret = fnv1a64_basis;
-	for (char const * const * end = text + *ntext; text != end; ++text)
-		/* NOTE: do hash the NUL terminator */
-		ret = do_fnv1a64(ret, *text, strlen(*text)+1);
-
-	*((uint64_t*)hash) = ret;
-
-
-}

@@ -11,13 +11,6 @@ static R_CallMethodDef call_methods[] = {
 	{NULL, NULL, 0}
 };
 
-static R_NativePrimitiveArgType fnv1a64_types[] = fnv1a64_TYPES;
-
-static R_CMethodDef c_methods[] = {
-	{"fnv1a64", (DL_FUNC)&fnv1a64, 3, fnv1a64_types},
-	{NULL, NULL, 0}
-};
-
 void R_init_cacheR(DllInfo *info) {
-   R_registerRoutines(info, c_methods, call_methods, NULL, NULL);
+   R_registerRoutines(info, NULL, call_methods, NULL, NULL);
 }
