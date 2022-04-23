@@ -44,18 +44,4 @@ Maintainer: \packageMaintainer{cacheR}
   x <- cache(update_x())
   # x has changed, but y hasn't. If we re-run the whole script, this
   # won't matter.
-
-  # make active bindings, tracking the lifetimes of everything?
-  x1 %<-% do_1()
-  x2 %<-% do_2(x1)
-  x3 %<-% do_3(x2)
-
-  x1 %<-% do_1_differently()
-  # By knowing the names of the objects we're assigning, we can track
-  # the fact that the source of x1 has changed, and note this for the
-  # whole dependency graph.
-  x3 %<-% do_3(x2) # x2 also recalculated
-  # or:
-  x3 # automatically recalculate x2, x3
-  # ?
 }}
