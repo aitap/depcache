@@ -1,7 +1,8 @@
 do.cache <- function(
 	expr, frame,
-	cache.dir = '.cache',
-	version = 2, compress = TRUE
+	cache.dir = getOption('cacheR.dir', '.cache'),
+	version = getOption('cacheR.rds.version', 2),
+	compress = getOption('cacheR.rds.compress', TRUE)
 ) {
 	dir.create(cache.dir, showWarnings = FALSE)
 	stopifnot(dir.exists(cache.dir))
@@ -25,7 +26,7 @@ cache <- function(expr, ...)
 		"LHS of smart assignment expected to be a symbol; instead got ",
 		paste(deparse(symbol), collapse = ' ')
 	)
-	expr   <- substitute(expr)
+	expr  <- substitute(expr)
 	frame <- parent.frame()
 	assign(
 		as.character(symbol),
