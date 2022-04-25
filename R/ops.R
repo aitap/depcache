@@ -7,6 +7,8 @@
 	frame  <- parent.frame()
 
 	fun <- function(assignment) {
+		# TODO: we should be able to cache in RAM here instead of
+		# reading from disk every time
 		if (missing(assignment)) {
 			do.cache(expr, frame, NULL, NULL)
 		} else {
