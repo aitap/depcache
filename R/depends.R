@@ -1,5 +1,5 @@
-# TODO: test the output of this function to make sure "skip" is taken
-# into account, none of the undesirables are picked up
+# TODO: test the output of this function to make sure that all the right
+# variables are taken into account, but "skip" is honoured
 
 dependencies <- function(expr, frame, skip) {
 	# any symbol in the expression can be a dependency
@@ -16,15 +16,31 @@ dependencies <- function(expr, frame, skip) {
 	# calls unique for us too
 	symbols <- setdiff(symbols, skip)
 
+	# Reliable test for objects that don't exist. A value identical to a
+	# freshly created environment won't be found in the environment of
+	# a user expression that doesn't have access to here.
+	notfound <- new.env(parent = emptyenv(), size = 0L)
+
 	values <- mget(
-		symbols, frame, ifnotfound = list(NULL), inherits = TRUE
+		symbols, frame, ifnotfound = list(notfound), inherits = TRUE
 	)
-	# skip missing values, primitives, non-local functions
+	# we pretend missing values don't exist (some NSE likely going on)
+	# and don't waste time hashing primitives (they shouldn't change by
+	# themselves, should they?)
 	ret <- Filter(
-		function(n)
-			!is.null(values[[n]]) && !is.primitive(values[[n]]) &&
-			(!is.function(values[[n]]) || exists(n, envir = frame, inherits = FALSE)),
-		symbols
+		function(v) !identical(v, notfound) && !is.primitive(v),
+		values
 	)
-	values[ret]
+
+	# Problem: between R-3.3 and R-4.1, package functions started being
+	# byte-compiled, which breaks comparisons between R versions.
+	# Workaround: un-byte-compile all functions for the purposes of
+	# hashing
+	ret <- lapply(ret, function(v)
+		if (is.function(v))
+			`body<-`(fun = v, envir = environment(v), value = body(v))
+		else v
+	)
+
+	ret
 }
