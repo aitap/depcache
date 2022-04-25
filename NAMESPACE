@@ -1,3 +1,5 @@
 useDynLib(cacheR, .registration = TRUE, .fixes = 'C_')
 importFrom(codetools, makeCodeWalker, walkCode)
-exportPattern('.*')
+export(cache)
+export(`%<-%`)
+export(`%->%`)
