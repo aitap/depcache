@@ -1,6 +1,7 @@
 #include "cacheR.h"
 
 #include <assert.h>
+#include <limits.h>
 
 /* FNV-1a hash: http://www.isthe.com/chongo/tech/comp/fnv */
 
@@ -40,11 +41,6 @@ static void outbytes(R_outpstream_t st, void * buf, int sz) {
 	hash_update(st->data, buf, sz);
 }
 
-/* FIXME: can we just pass NULL, NULL instad of phook, pdata? */
-static SEXP phook(SEXP obj, SEXP pdata) {
-	return R_NilValue;
-}
-
 SEXP hash(SEXP value, SEXP sver) {
 	struct R_outpstream_st stream;
 	/* R Internals, 1.8 Serialization Formats:
@@ -67,15 +63,16 @@ SEXP hash(SEXP value, SEXP sver) {
 	 */
 	struct hash_state st = { .val = fnv1a64_basis, .skip = 14 };
 	int version = asInteger(sver);
-	SEXP ret = PROTECT(allocVector(RAWSXP, sizeof(uint64_t)));
+	SEXP ret = PROTECT(allocVector(RAWSXP, sizeof(st.val)));
 	R_InitOutPStream(
 		&stream, &st,
 		R_pstream_xdr_format, version,
 		outchar, outbytes,
-		phook, R_NilValue
+		NULL, NULL
 	);
 	R_Serialize(value, &stream);
-	*(uint64_t*)RAW(ret) = st.val;
+	for (size_t i = 0; i < sizeof(st.val); ++i)
+		RAW(ret)[i] = (Rbyte)(st.val >> (CHAR_BIT * (sizeof(st.val) - 1 - i)));
 	UNPROTECT(1);
 	return ret;
 };
