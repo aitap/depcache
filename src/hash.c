@@ -1,7 +1,10 @@
-#include "cacheR.h"
-
 #include <assert.h>
 #include <limits.h>
+#include <stdint.h>
+
+#include <R.h>
+#include <Rinternals.h>
+#include <R_ext/Rdynload.h>
 
 /* FNV-1a hash: http://www.isthe.com/chongo/tech/comp/fnv */
 
@@ -41,7 +44,7 @@ static void outbytes(R_outpstream_t st, void * buf, int sz) {
 	hash_update(st->data, buf, sz);
 }
 
-SEXP hash(SEXP value, SEXP sver) {
+static SEXP hash(SEXP value, SEXP sver) {
 	struct R_outpstream_st stream;
 	/* R Internals, 1.8 Serialization Formats:
 	 *
@@ -76,3 +79,12 @@ SEXP hash(SEXP value, SEXP sver) {
 	UNPROTECT(1);
 	return ret;
 };
+
+static R_CallMethodDef call_methods[] = {
+	{"hash",       (DL_FUNC)&hash,       2},
+	{NULL, NULL, 0}
+};
+
+void R_init_cacheR(DllInfo *info) {
+   R_registerRoutines(info, NULL, call_methods, NULL, NULL);
+}
