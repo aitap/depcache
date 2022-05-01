@@ -50,6 +50,24 @@
   The exact algorithm used and the way hash is obtained are
   implementation details and may eventually change, though not without a
   good reason.
+
+  \strong{FIXME}: \itemize{
+    \item Nothing is done about non-top-level functions. They could be
+    hiding inside recursive structures like lists, including
+    environments. Any value being considered as an expression's
+    dependency should probably be walked recursively in search of things
+    to fix up (currently strings and functions, but could be more).
+    Environments can't be easily fixed up, so they will probably have to
+    be ignored.
+
+    \item In theory, strings could be automatically re-encoded into
+    UTF-8 before serializing (\code{\link{enc2utf8}}) in order to avoid
+    native encoding differences. (Then we could ignore the format 3
+    native encoding marker, if we wanted to.) On the other hand, change
+    in a string's encoding could be intended, in which case it should
+    affect the value of the hash. There's probably no good solution to
+    this.
+  }
 }
 \value{
   Same value as returned by \code{expr}, either as a result of its
