@@ -32,15 +32,10 @@ dependencies <- function(expr, frame, skip) {
 		values
 	)
 
-	# Problem: between R-3.3 and R-4.1, package functions started being
-	# byte-compiled, which breaks comparisons between R versions.
-	# Workaround: un-byte-compile all functions for the purposes of
-	# hashing
-	ret <- lapply(ret, function(v)
-		if (is.function(v))
-			`body<-`(fun = v, envir = environment(v), value = body(v))
-		else v
-	)
+	# Problem: between different versions of R and operating systems,
+	# serialize(x) isn't exactly byte-identical, but it's close. We can
+	# help some of it.
+	ret <- lapply(ret, fixup)
 
 	ret
 }
