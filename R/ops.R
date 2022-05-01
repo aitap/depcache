@@ -3,6 +3,7 @@
 	if (!is.symbol(symbol)) stop(
 		'Cache-tracking assignment only works on plain variable names'
 	)
+	symbol <- as.character(symbol)
 	expr   <- substitute(rhs)
 	frame  <- parent.frame()
 
@@ -16,14 +17,14 @@
 				'Overwriting a cache-tracked object (', symbol, ') ',
 				'with an untracked value', call. = FALSE
 			)
-			rm(list = as.character(symbol), envir = frame)
-			assign(as.character(symbol), assignment, envir = frame)
+			rm(list = symbol, envir = frame)
+			assign(symbol, assignment, envir = frame)
 		}
 	}
 
 	# makeActiveBinding stops if the variable already exists
 	if (exists(symbol, frame, inherits = FALSE))
-		rm(list = as.character(symbol), envir = frame)
+		rm(list = symbol, envir = frame)
 	makeActiveBinding(symbol, fun, frame)
 	invisible(fun())
 }
