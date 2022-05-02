@@ -2,7 +2,7 @@
 # various circumstances
 get.filename <- function(expr, frame, skip, extra, cache.dir, version) {
 	deps <- dependencies(expr, frame, skip)
-	filename <- hash(list(removeSource(expr), deps, extra), version)
+	filename <- hash(list(fixup(expr), fixup(deps), extra), version)
 	paste0(file.path(cache.dir, filename), '.rds')
 }
 

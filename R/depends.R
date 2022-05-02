@@ -32,10 +32,5 @@ dependencies <- function(expr, frame, skip) {
 		values
 	)
 
-	# Problem: between different versions of R and operating systems,
-	# serialize(x) isn't exactly byte-identical, but it's close. We can
-	# help some of it.
-	ret <- lapply(ret, fixup)
-
 	ret
 }
