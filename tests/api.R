@@ -1,0 +1,36 @@
+library(cacheR)
+
+cache.dir <- file.path(tempdir(), 'cache')
+options(cacheR.dir = cache.dir)
+
+# depends() previously crashed on expressions with no symbols
+x <- cache(1)
+stopifnot(all.equal(x, 1)) # just in case
+
+# must remember and not re-run cached chunks of code
+o1 <- capture.output(
+	x <- cache({cat('performing side-effects'); 'ok'})
+)
+stopifnot(all.equal(x, 'ok'), all.equal(o1, 'performing side-effects'))
+o2 <- capture.output(
+	x <- cache({cat('performing side-effects'); 'ok'})
+)
+stopifnot(all.equal(x, 'ok'), all.equal(o2, character()))
+
+# dependencies in cache-tracking assignment
+a <- 1
+
+o <- capture.output(
+	x %<-% { cat('side-effects'); a + 1 }
+)
+stopifnot(all.equal(x, 2), all.equal(o, 'side-effects'))
+# must not re-run if nothing changed
+o <- capture.output(invisible(force(x)))
+stopifnot(all.equal(o, character()))
+
+# must re-run if dependencies change
+a <- -1
+o <- capture.output(invisible(force(x)))
+stopifnot(all.equal(x, 0), all.equal(o, 'side-effects'))
+
+unlink(cache.dir, recursive = TRUE)
