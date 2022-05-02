@@ -33,4 +33,6 @@ a <- -1
 o <- capture.output(invisible(force(x)))
 stopifnot(all.equal(x, 0), all.equal(o, 'side-effects'))
 
+tools::assertWarning(x <- 1)
+
 unlink(cache.dir, recursive = TRUE)
