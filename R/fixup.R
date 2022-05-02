@@ -9,12 +9,13 @@ fixup <- function(x) {
 	# all of which could be subsetted.
 	if (is.function(x)) {
 		body(x) <- Recall(body(x))
-		formals(x) <- Recall(formals(x))
+		#formals(x) <- Recall(formals(x))
 	}
-	# Otherwise recurse for all recursive objects, except environments:
-	# we don't touch those because of their reference semantics.
+	# Otherwise recurse for all recursive objects, except environments
+	# (we don't touch those because of their reference semantics) and
+	# functions (can't be subsetted, see above).
 	# The user might have to intervene here.
-	if (is.recursive(x) && !is.environment(x))
+	if (is.recursive(x) && !is.environment(x) && !is.function(x))
 		for (i in seq_along(x)) x[[i]] <- Recall(x[[i]])
 	# A character vector may be of native encoding, which may be
 	# different between operating systems, resulting in different byte

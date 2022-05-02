@@ -22,7 +22,9 @@ dependencies <- function(expr, frame, skip) {
 	notfound <- new.env(parent = emptyenv(), size = 0L)
 
 	values <- mget(
-		symbols, frame, ifnotfound = list(notfound), inherits = TRUE
+		# if there's no symbols, cast NULL to character to satisfy mget
+		as.character(symbols), frame, ifnotfound = list(notfound),
+		inherits = TRUE
 	)
 	# we pretend missing values don't exist (some NSE likely going on)
 	# and don't waste time hashing primitives (they shouldn't change by
