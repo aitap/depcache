@@ -7,11 +7,27 @@
 	expr   <- substitute(expr)
 	frame  <- parent.frame()
 
+	hash <- get.filename(
+		expr, frame, NULL, NULL,
+		# FIXME: duplication
+		cache.dir = getOption('cacheR.dir', '.cache'),
+		version = getOption('cacheR.ser.version', 2)
+	)
+	val <- do.cache(expr, frame, NULL, NULL)
+
 	fun <- function(assignment) {
-		# TODO: we should be able to cache in RAM here instead of
-		# reading from disk every time
 		if (missing(assignment)) {
-			do.cache(expr, frame, NULL, NULL)
+			new.hash <- get.filename(
+				expr, frame, NULL, NULL,
+				# FIXME: duplication
+				cache.dir = getOption('cacheR.dir', '.cache'),
+				version = getOption('cacheR.ser.version', 2)
+			)
+			if (new.hash != hash) {
+				val <<- do.cache(expr, frame, NULL, NULL)
+				hash <<- new.hash
+			}
+			val
 		} else {
 			warning(
 				'Overwriting a cache-tracked object (', symbol, ') ',
