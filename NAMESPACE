@@ -1,5 +1,6 @@
 useDynLib(cacheR, .registration = TRUE, .fixes = 'C_')
 importFrom(codetools, makeCodeWalker, walkCode)
+importFrom(utils, removeSource)
 export(cache)
 export(`%<-%`)
 export(`%->%`)

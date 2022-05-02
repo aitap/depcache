@@ -1,10 +1,10 @@
-`%<-%` <- function(lhs, rhs) {
-	symbol <- substitute(lhs)
+`%<-%` <- function(symbol, expr) {
+	symbol <- substitute(symbol)
 	if (!is.symbol(symbol)) stop(
 		'Cache-tracking assignment only works on plain variable names'
 	)
 	symbol <- as.character(symbol)
-	expr   <- substitute(rhs)
+	expr   <- substitute(expr)
 	frame  <- parent.frame()
 
 	fun <- function(assignment) {
