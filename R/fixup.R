@@ -1,3 +1,9 @@
+# Test for R_MissingArg, not actually missing argument
+.missing <- function(x) {
+	x <- x
+	missing(x)
+}
+
 # apply changes to objects in order to make their hashes reproducible
 # between R versions and operating systems
 fixup <- function(x) {
@@ -9,14 +15,18 @@ fixup <- function(x) {
 	# all of which could be subsetted.
 	if (is.function(x)) {
 		body(x) <- Recall(body(x))
-		#formals(x) <- Recall(formals(x))
+		formals(x) <- Recall(formals(x))
 	}
 	# Otherwise recurse for all recursive objects, except environments
 	# (we don't touch those because of their reference semantics) and
 	# functions (can't be subsetted, see above).
 	# The user might have to intervene here.
 	if (is.recursive(x) && !is.environment(x) && !is.function(x))
-		for (i in seq_along(x)) x[[i]] <- Recall(x[[i]])
+		for (i in seq_along(x))
+			if (!.missing(x[[i]]))
+				# It's possible to stumble upon R_MissingArg inside
+				# formals(), better leave it alone
+				x[[i]] <- Recall(x[[i]])
 	# A character vector may be of native encoding, which may be
 	# different between operating systems, resulting in different byte
 	# values and hashes, despite the values meaning the same thing. It's
