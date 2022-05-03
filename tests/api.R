@@ -5,7 +5,6 @@ options(cacheR.dir = cache.dir)
 
 # depends() previously crashed on expressions with no symbols
 x <- cache(1)
-stopifnot(all.equal(x, 1)) # just in case
 
 # must remember and not re-run cached chunks of code
 o1 <- capture.output(
@@ -32,6 +31,12 @@ stopifnot(all.equal(o, character()))
 a <- -1
 o <- capture.output(invisible(force(x)))
 stopifnot(all.equal(x, 0), all.equal(o, 'side-effects'))
+
+# must not re-run for a different form of the same call
+o <- capture.output(
+	{ cat('side-effects'); a + 1 } %->% y
+)
+stopifnot(all.equal(o, character()))
 
 tools::assertWarning(x <- 1)
 
