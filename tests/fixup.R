@@ -24,31 +24,35 @@ check.all.equal <- function(x) for (n in names(x))
 # (which functions consist of).
 check.all.equal(loadNamespace('cacheR'))
 
-# Try to cover all kinds of objects, except atomic vectors (we only
+recursive_env = new.env()
+recursive_env$e <- recursive_env
+
+# Try to cover most kinds of objects, except atomic vectors (we only
 # touch character vectors, covered above) and stuff we're unlikely to
 # ever meet in R code.
 check.all.equal(list(
 	NULL = NULL,
 	symbol = as.symbol('hello'),
-	pairlist = pairlist(a = 1),
-	closure = function() NULL,
-	environment = environment(),
+	pairlist = pairlist(a = NULL, 1),
+	closure = function() c(NA, NULL, 0),
+	environment = recursive_env,
 	language = quote(a + b),
 	special = substitute,
 	builtin = `+`,
 	expression = expression(haha),
-	list = list(NULL),
+	list = alist(NULL, a=),
 	S4_refclass = setRefClass( # reference classes are S4 objects
 		'FooClass', fields = c('string'), methods = list(
 			initialize = function() {
-				string <<- x
+				string <<- `Encoding<-`('\xC5\xD8', 'latin1')
 			}
 		)
 	),
 	S4_character = setClass(
-		'BarClass', contains = 'character'
+		'BarClass', contains = 'character', prototype = x
 	)(),
 	S4_function = setClass(
-		'BazClass', contains = 'function'
+		'BazClass', contains = 'function', prototype = function(y)
+			alist(a=, NA, NULL, 0)
 	)()
 ))

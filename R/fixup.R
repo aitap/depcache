@@ -35,60 +35,49 @@
 
 # apply changes to objects in order to make their hashes reproducible
 # between R versions and operating systems
-fixup <- function(x) {
-	# Environments are reference objects and need to be recreated. We
-	# assume that named environments belong to packages and won't be
-	# hashed so don't need to be fixed.
-	if (is.environment(x) && !nzchar(environmentName(x))) {
-		e <- new.env(parent = Recall(parent.env(x)), size = length(x))
-		for (n in names(x)) e[[n]] <- Recall(x[[n]])
-		if (isS4(x)) x@.xData <- e else x <- e
-	}
-	# Source references can be different for equivalent functions and
-	# expressions and so must be removed.
-	if (is.language(x)) x <- .removeSource(x)
-	# Functions are special in that they are recursive, but can't be
-	# directly subsetted: they consist of formals, body and environment,
-	# all of which could be subsetted. There's nothing to fix up about
-	# primitives, and they trip up body<-.
-	if (is.function(x) && !is.primitive(x)) {
-		# Apparently, body<- destroys S4 objects that inherit from class
-		# function, even if I explicitly import the class and the method
-		# from the "methods" package. Workaround: call body<- on the
-		# data part of the object instead.
-		fun <- if (isS4(x)) x@.Data else x
-		body(fun) <- Recall(body(fun))
-		formals(fun) <- Recall(formals(fun))
-		if (isS4(x)) x@.Data <- fun
-	}
-	# Otherwise recurse for all recursive objects, except environments
-	# (we don't touch those because of their reference semantics) and
-	# functions (can't be subsetted, see above).
-	# The user might have to intervene here.
-	if (is.recursive(x) && !is.environment(x) && !is.function(x))
-		for (i in seq_along(x))
-			# 1. Inside formals() there can be R_MissingArg, better
-			# leave it alone.
-			# 2. There's nothing to fix up in a NULL, and inserting a
-			# NULL in a list removes the entry.
-			if (!.missing(x[[i]]) && !is.null(x[[i]]))
-				x[[i]] <- Recall(x[[i]])
-	# A character vector may be of native encoding, which may be
-	# different between operating systems, resulting in different byte
-	# values and hashes, despite the values meaning the same thing. It's
-	# possible to have strings of different Encoding() which are
-	# nevertheless identical(), so this is most likely the right thing
-	# to do... unless the string is not representable in UTF-8. The user
-	# might have to intervene here too.
-	if (is.character(x)) x <- enc2utf8(x)
-	# Process slots of S4 objects.
-	if (isS4(x)) for (n in setdiff(
+fixup <- function(x)
+	if (isS4(x)) {
+		# Don't even try to "edit" S4 objects using body<- and similar
+		# tools; this destroys the S4 part of the object. Instead, use
+		# the (pseudo-)slots to edit the object by parts.
 		# NB: can't use slotNames because class representations are
 		# themselves S4 objects and slotNames would return the names of
 		# the slots for the wrong class
-		names(getSlots(class(x))),
-		# those are pseudo-slots, should've been dealt with above
-		c('.Data', '.xData')
-	)) slot(x, n) <- Recall(slot(x, n))
-	x
-}
+		for (n in names(getSlots(class(x))))
+			slot(x, n) <- Recall(slot(x, n))
+		x
+	} else if (is.character(x)) {
+		# This changes the representation of the string, but doesn't
+		# change its semantics, unless the string isn't representable in
+		# UTF-8 (e.g. because it contained invalid byte sequences).
+		enc2utf8(x)
+	} else if (is.primitive(x) || is.environment(x)) {
+		# There's nothing to fix about primitives, and they trip up
+		# body<-. Environments have reference semantics and can be
+		# recursive, so it's hard to keep track of them properly.
+		x
+	} else {
+		# Out of special cases, must consider intersections for some of
+		# the following conditions.
+
+		# Source references can be different for equivalent functions and
+		# expressions and so must be removed.
+		if (is.language(x)) x <- .removeSource(x)
+		if (is.function(x)) {
+			# Functions are special in that they are recursive, but can't be
+			# directly subsetted: they consist of formals, body and environment,
+			# all of which could be subsetted.
+			body(x) <- Recall(body(x))
+			formals(x) <- Recall(formals(x))
+		} else if (is.recursive(x))
+			# Recursive objects could contain things to fix downstream.
+			for (i in seq_along(x))
+				# 1. Inside formals() there can be R_MissingArg, better
+				# leave it alone.
+				# 2. There's nothing to fix up in a NULL, and inserting a
+				# NULL in a list removes the entry.
+				if (!.missing(x[[i]]) && !is.null(x[[i]]))
+					x[[i]] <- Recall(x[[i]])
+		# Finally, done with transformations.
+		x
+	}
