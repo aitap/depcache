@@ -1,4 +1,5 @@
-# Test for R_MissingArg, not actually missing argument
+# Test for an R_MissingArg (as found in formals()), not an actually
+# missing argument.
 .missing <- function(x) {
 	x <- x
 	missing(x)
@@ -45,6 +46,11 @@ fixup <- function(x) {
 	# directly subsetted: they consist of formals, body and environment,
 	# all of which could be subsetted.
 	if (is.function(x)) {
+		# NOTE: There seem to exist a corner case of an S4 object of
+		# class "function" that gets damaged by body<-:
+		# getClass('MethodDefinition')@prototype. "S4 object of class
+		# NULL"? what? AFAIU, this isn't normal and shouldn't show up
+		# for the usual kind of S4 objects.
 		body(x) <- Recall(body(x))
 		formals(x) <- Recall(formals(x))
 	}
@@ -68,5 +74,14 @@ fixup <- function(x) {
 	# to do... unless the string is not representable in UTF-8. The user
 	# might have to intervene here too.
 	if (is.character(x)) x <- enc2utf8(x)
+	# Process slots of S4 objects.
+	if (isS4(x)) for (n in setdiff(
+		# NB: can't use slotNames because class representations are
+		# themselves S4 objects and slotNames would return the wrong
+		# slot names
+		names(getSlots(class(x))),
+		# those are pseudo-slots, can't be assigned to
+		c('.Data', '.xData')
+	)) slot(x, n) <- Recall(slot(x, n))
 	x
 }

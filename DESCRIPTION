@@ -1,7 +1,7 @@
 Package: cacheR
 Type: Package
 Title: What the package does (short line)
-Imports: codetools
+Imports: codetools, methods
 Version: 1.0
 Date: 2022-04-03
 Author: Who wrote it
