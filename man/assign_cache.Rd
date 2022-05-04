@@ -15,8 +15,7 @@
     A variable name to associate with the expression.
   }
   \item{expr}{
-    The expression to cache and to take the dependencies into account
-    of.
+    The expression to cache, taking dependencies into account.
   }
 }
 \details{
@@ -25,11 +24,36 @@
   works on variable names and what happens when you overwrite it.
 }
 \value{
-  Invisibly, the value of the expression.
+  Returns the value of \code{expr}, invisibly. Called for the side
+  effect of creating an active binding with a name specified by
+  \code{symbol}.
 }
 
 \seealso{\code{\link{cache}}, \code{\link{makeActiveBinding}}}
 \examples{
-  # TODO: real examples
+  \dontshow{
+    .cacheR.dir <- file.path(tempdir(), 'cacheR-example')
+    .op <- options(cacheR.dir = .cacheR.dir)
+  }
+  a <- 1
+  # will evaluate the expression first
+  x \%<-\% { message('side-effects'); a + 1 }
+  x # 2
+  # will reuse cached value
+  {
+    message('side-effects')
+    a + 1
+    # even if written a bit differently
+  } \%->\% y
+  y # 2
+  a <- -1
+  # will evaluate the expression again
+  x # 0
+  # will load the new cached value
+  y # 0
+  \dontshow{
+    unlink(.cacheR.dir, recursive = TRUE)
+    options(.op)
+  }
 }
 \keyword{utilities}

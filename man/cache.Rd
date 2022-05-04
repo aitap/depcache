@@ -45,6 +45,10 @@
     versions of R, every function is \dQuote{rebuilt} from its body
     before hashing, forcing R to discard the bytecode from the copy of
     the function before it's hashed.
+
+    \item Strings are converted to UTF-8 before hashing.
+
+    \item All this is done recursively.
   }
 
   The exact algorithm used and the way hash is obtained are
@@ -52,26 +56,13 @@
   good reason.
 
   \strong{FIXME}: \itemize{
-    \item Nothing is done about non-top-level functions. They could be
-    hiding inside recursive structures like lists, including
-    environments. Any value being considered as an expression's
-    dependency should probably be walked recursively in search of things
-    to fix up (currently strings and functions, but could be more).
-    Environments can't be easily fixed up, so they will probably have to
-    be ignored.
-
-    \item In theory, strings could be automatically re-encoded into
-    UTF-8 before serializing (\code{\link{enc2utf8}}) in order to avoid
-    native encoding differences. (Then we could ignore the format 3
-    native encoding marker, if we wanted to.) On the other hand, change
-    in a string's encoding could be intended, in which case it should
-    affect the value of the hash. There's probably no good solution to
-    this.
+    \item Environments can't be easily fixed up, so they will probably
+    have to be ignored.
   }
 }
 \value{
-  Same value as returned by \code{expr}, either as a result of its
-  evaluation, or loaded from cache.
+  The result of evaluating \code{expr}, either directly, or loaded from
+  cache.
 }
 \references{
   FNV-1a hash: \url{http://www.isthe.com/chongo/tech/comp/fnv}
@@ -79,6 +70,25 @@
 
 \seealso{\code{\link{\%<-\%}}}
 \examples{
-  # TODO: real examples
+  \dontshow{
+    .cacheR.dir <- file.path(tempdir(), 'cacheR-example')
+    .op <- options(cacheR.dir = .cacheR.dir)
+  }
+  a <- 1
+  # will evaluate the expression the first time
+  cache({message('side effects'); a + 1}) # 2
+  # saved value of the expression will be used
+  cache({
+    message('side effects')
+    # even if written a bit differently
+    a + 1
+  }) # 2
+  a <- -1
+  # expression evaluated again because dependencies changed
+  cache({message('side effects'); a + 1}) # 0
+  \dontshow{
+    unlink(.cacheR.dir, recursive = TRUE)
+    options(.op)
+  }
 }
 \keyword{utilities}
