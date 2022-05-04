@@ -13,8 +13,8 @@ dependencies <- function(expr, frame, skip) {
 	)))
 
 	# except the ones we're explicitly told not to hash
-	# calls unique for us too
-	symbols <- setdiff(symbols, skip)
+	# also get them in a defined order
+	symbols <- sort(unique(setdiff(symbols, skip)))
 
 	# Reliable test for objects that don't exist. A value identical to a
 	# freshly created environment won't be found in the environment of
@@ -27,12 +27,7 @@ dependencies <- function(expr, frame, skip) {
 		inherits = TRUE
 	)
 	# we pretend missing values don't exist (some NSE likely going on)
-	# and don't waste time hashing primitives (they shouldn't change by
-	# themselves, should they?)
-	ret <- Filter(
-		function(v) !identical(v, notfound) && !is.primitive(v),
-		values
-	)
+	ret <- Filter(function(v) !identical(v, notfound), values)
 
 	ret
 }
