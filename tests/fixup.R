@@ -38,11 +38,17 @@ check.all.equal(list(
 	builtin = `+`,
 	expression = expression(haha),
 	list = list(NULL),
-	S4 = setRefClass( # reference classes are S4 objects
+	S4_refclass = setRefClass( # reference classes are S4 objects
 		'FooClass', fields = c('string'), methods = list(
 			initialize = function() {
 				string <<- x
 			}
 		)
-	)
+	),
+	S4_character = setClass(
+		'BarClass', contains = 'character'
+	)(),
+	S4_function = setClass(
+		'BazClass', contains = 'function'
+	)()
 ))

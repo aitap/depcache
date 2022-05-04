@@ -36,6 +36,14 @@
 # apply changes to objects in order to make their hashes reproducible
 # between R versions and operating systems
 fixup <- function(x) {
+	# Environments are reference objects and need to be recreated. We
+	# assume that named environments belong to packages and won't be
+	# hashed so don't need to be fixed.
+	if (is.environment(x) && !nzchar(environmentName(x))) {
+		e <- new.env(parent = Recall(parent.env(x)), size = length(x))
+		for (n in names(x)) e[[n]] <- Recall(x[[n]])
+		if (isS4(x)) x@.xData <- e else x <- e
+	}
 	# Source references can be different for equivalent functions and
 	# expressions and so must be removed.
 	if (is.language(x)) x <- .removeSource(x)
