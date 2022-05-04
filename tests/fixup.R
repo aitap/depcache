@@ -38,5 +38,11 @@ check.all.equal(list(
 	builtin = `+`,
 	expression = expression(haha),
 	list = list(NULL),
-	S4 = Matrix::Diagonal(10)
+	S4 = setRefClass( # reference classes are S4 objects
+		'FooClass', fields = c('string'), methods = list(
+			initialize = function() {
+				string <<- x
+			}
+		)
+	)
 ))

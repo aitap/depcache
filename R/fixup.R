@@ -36,23 +36,22 @@
 # apply changes to objects in order to make their hashes reproducible
 # between R versions and operating systems
 fixup <- function(x) {
-	# There's nothing to fix up about primitives, and they trip up
-	# body() replacement.
-	if (is.primitive(x)) return(x)
 	# Source references can be different for equivalent functions and
 	# expressions and so must be removed.
 	if (is.language(x)) x <- .removeSource(x)
 	# Functions are special in that they are recursive, but can't be
 	# directly subsetted: they consist of formals, body and environment,
-	# all of which could be subsetted.
-	if (is.function(x)) {
-		# NOTE: There seem to exist a corner case of an S4 object of
-		# class "function" that gets damaged by body<-:
-		# getClass('MethodDefinition')@prototype. "S4 object of class
-		# NULL"? what? AFAIU, this isn't normal and shouldn't show up
-		# for the usual kind of S4 objects.
-		body(x) <- Recall(body(x))
-		formals(x) <- Recall(formals(x))
+	# all of which could be subsetted. There's nothing to fix up about
+	# primitives, and they trip up body<-.
+	if (is.function(x) && !is.primitive(x)) {
+		# Apparently, body<- destroys S4 objects that inherit from class
+		# function, even if I explicitly import the class and the method
+		# from the "methods" package. Workaround: call body<- on the
+		# data part of the object instead.
+		fun <- if (isS4(x)) x@.Data else x
+		body(fun) <- Recall(body(fun))
+		formals(fun) <- Recall(formals(fun))
+		if (isS4(x)) x@.Data <- fun
 	}
 	# Otherwise recurse for all recursive objects, except environments
 	# (we don't touch those because of their reference semantics) and
@@ -77,10 +76,10 @@ fixup <- function(x) {
 	# Process slots of S4 objects.
 	if (isS4(x)) for (n in setdiff(
 		# NB: can't use slotNames because class representations are
-		# themselves S4 objects and slotNames would return the wrong
-		# slot names
+		# themselves S4 objects and slotNames would return the names of
+		# the slots for the wrong class
 		names(getSlots(class(x))),
-		# those are pseudo-slots, can't be assigned to
+		# those are pseudo-slots, should've been dealt with above
 		c('.Data', '.xData')
 	)) slot(x, n) <- Recall(slot(x, n))
 	x
