@@ -1,30 +1,17 @@
-`%<-%` <- function(symbol, expr) {
-	symbol <- substitute(symbol)
+do.cachetrack <- function(symbol, expr, frame, skip, extra, ...) {
 	if (!is.symbol(symbol)) stop(
 		'Cache-tracking assignment only works on plain variable names'
 	)
 	symbol <- as.character(symbol)
-	expr   <- substitute(expr)
-	frame  <- parent.frame()
 
-	hash <- get.filename(
-		expr, frame, NULL, NULL,
-		# FIXME: duplication
-		cache.dir = getOption('cacheR.dir', '.cache'),
-		version = getOption('cacheR.ser.version', 2)
-	)
-	val <- do.cache(expr, frame, NULL, NULL)
+	hash <- get.filename(expr, frame, skip, extra, ...)
+	val <- do.cache(expr, frame, skip, extra, ...)
 
 	fun <- function(assignment) {
 		if (missing(assignment)) {
-			new.hash <- get.filename(
-				expr, frame, NULL, NULL,
-				# FIXME: duplication
-				cache.dir = getOption('cacheR.dir', '.cache'),
-				version = getOption('cacheR.ser.version', 2)
-			)
+			new.hash <- get.filename(expr, frame, skip, extra, ...)
 			if (new.hash != hash) {
-				val <<- do.cache(expr, frame, NULL, NULL)
+				val <<- do.cache(expr, frame, skip, extra, ...)
 				hash <<- new.hash
 			}
 			val
@@ -45,5 +32,16 @@
 	invisible(fun())
 }
 
-`%->%` <- function(expr, symbol)
-	eval(substitute(symbol %<-% expr), parent.frame())
+`%<-%` <- function(symbol, expr) do.cachetrack(
+	substitute(symbol), substitute(expr), parent.frame(), NULL, NULL
+)
+
+`%->%` <- function(expr, symbol) do.cachetrack(
+	substitute(symbol), substitute(expr), parent.frame(), NULL, NULL
+)
+
+setCached <- function(symbol, expr, skip = NULL, extra = NULL, ...)
+	do.cachetrack(
+		substitute(symbol), substitute(expr), parent.frame(),
+		skip, extra, ...
+	)

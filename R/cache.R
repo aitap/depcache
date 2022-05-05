@@ -1,6 +1,6 @@
 # TODO: test the output of this function for existence of file in
 # various circumstances
-get.filename <- function(expr, frame, skip, extra, cache.dir, version) {
+get.filename <- function(expr, frame, skip, extra, cache.dir = getOption('cacheR.dir', '.cache'), version = getOption('cacheR.ser.version', 2)) {
 	deps <- dependencies(expr, frame, skip)
 	filename <- hash(list(fixup(expr), fixup(deps), extra), version)
 	paste0(file.path(cache.dir, filename), '.rds')
