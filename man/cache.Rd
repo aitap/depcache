@@ -8,7 +8,7 @@
   result in that file.
 }
 \usage{
-  cache(expr, skip = NULL, extra = NULL, ...)
+  cache(expr, skip = NULL, extra = NULL, \dots)
 }
 \arguments{
   \item{expr}{

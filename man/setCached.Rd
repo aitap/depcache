@@ -1,6 +1,7 @@
 \name{\%->\%}
 \alias{\%->\%}
 \alias{\%<-\%}
+\alias{setCached}
 \title{Cache-tracking assignment}
 \description{
   Cache expression values and automatically recalculate them when their
@@ -9,13 +10,29 @@
 \usage{
   symbol \%<-\% expr
   expr \%->\% symbol
+  setCached(symbol, expr, skip = NULL, extra = NULL, \dots)
 }
 \arguments{
   \item{symbol}{
-    A variable name to associate with the expression.
+    A variable name to associate with the expression, unquoted.
   }
   \item{expr}{
     The expression to cache, taking dependencies into account.
+  }
+  \item{skip}{
+    A character vector containing variable names to omit from the
+    automatically-determinted dependencies of an expression. Use it when
+    the automatic dependency process is overly eager and results in
+    unexpected recalculation.
+  }
+  \item{extra}{
+    An unquoted expression to be considered an extra part of the state,
+    in addition to the automatically determined dependencies. Will be
+    evaluated every time the variable is accessed to determine whether
+    it should be recalculated.
+  }
+  \item{\dots}{
+    Additional settings. \strong{TODO}
   }
 }
 \details{
