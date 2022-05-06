@@ -33,15 +33,17 @@ do.cachetrack <- function(symbol, expr, frame, skip, extra, ...) {
 }
 
 `%<-%` <- function(symbol, expr) do.cachetrack(
-	substitute(symbol), substitute(expr), parent.frame(), NULL, NULL
+	substitute(symbol), substitute(expr), parent.frame(),
+	NULL, quote(NULL)
 )
 
 `%->%` <- function(expr, symbol) do.cachetrack(
-	substitute(symbol), substitute(expr), parent.frame(), NULL, NULL
+	substitute(symbol), substitute(expr), parent.frame(),
+	NULL, quote(NULL)
 )
 
 setCached <- function(symbol, expr, skip = NULL, extra = NULL, ...)
 	do.cachetrack(
 		substitute(symbol), substitute(expr), parent.frame(),
-		skip, extra, ...
+		skip, substitute(extra), ...
 	)

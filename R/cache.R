@@ -2,7 +2,7 @@
 # various circumstances
 get.filename <- function(expr, frame, skip, extra, cache.dir = getOption('cacheR.dir', '.cache'), version = getOption('cacheR.ser.version', 2)) {
 	deps <- dependencies(expr, frame, skip)
-	filename <- hash(list(fixup(expr), fixup(deps), extra), version)
+	filename <- hash(list(fixup(expr), fixup(deps), eval(extra, frame)), version)
 	paste0(file.path(cache.dir, filename), '.rds')
 }
 
@@ -30,4 +30,4 @@ do.cache <- function(
 }
 
 cache <- function(expr, skip = NULL, extra = NULL, ...)
-	do.cache(substitute(expr), parent.frame(), skip, extra, ...)
+	do.cache(substitute(expr), parent.frame(), skip, substitute(extra), ...)
