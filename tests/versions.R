@@ -2,7 +2,7 @@ Rscript.old <- Sys.getenv('RSCRIPT_OLD_VERSION')
 Rscript.new <- Sys.getenv('RSCRIPT_NEW_VERSION')
 src <- Sys.getenv('CACHER_SRC')
 # if running in R CMD check, package source is available
-pkg <- if (nzchar(src)) src else file.path('00_pkg_src', 'cacheR')
+pkg <- if (nzchar(src)) src else file.path('..', '00_pkg_src', 'cacheR')
 
 if (!(
 	nzchar(Rscript.old) && nzchar(Rscript.new) &&
@@ -28,6 +28,7 @@ if (!(
 trace(serialize, quote(version <- 2), at = 1, print = FALSE)
 
 library(parallel)
+Sys.unsetenv('R_TESTS')
 cl <- structure(c(
 	makePSOCKcluster(1, rscript = Rscript.old),
 	# NB: old R can't run new R as a cluster worker
@@ -36,10 +37,11 @@ cl <- structure(c(
 
 # check that R versions differ and are in the correct order
 Rversions <- clusterEvalQ(cl, getRversion())
+message('R versions in use: ', Rversions[[1]], ', ', Rversions[[2]])
 stopifnot(Rversions[[1]] < Rversions[[2]])
 
 hash.all <- function(x, v, skip = NULL)
-	sapply(setNames(nm = names(x[!names(x) %in% skip])), function(n)
+	sapply(setNames(nm = setdiff(names(x), skip)), function(n)
 		cacheR:::hash(cacheR:::fixup(x[[n]]), v)
 	)
 clusterExport(cl, c('pkg', 'hash.all'))
@@ -58,11 +60,13 @@ clusterEvalQ(cl, {
 	lat1str <- `Encoding<-`('\xC5\xD8', 'latin1')
 })
 
+fail <- FALSE
 hashcmp <- function(res) {
 	mask <- res[[1]] != res[[2]]
 	if (!any(mask)) return()
 	message('Found differences in hash values:')
 	print(cbind(old = res[[1]][mask], new = res[[2]][mask]))
+	fail <<- TRUE
 }
 
 # test that the "same" objects result in the same hash for different
@@ -88,13 +92,6 @@ for (v in if (Rversions[[1]] >= '3.5.0') 2:3 else 2) {
 		builtin = `+`,
 		expression = expression(haha),
 		list = alist(NULL, a=),
-		S4_refclass = setRefClass( # reference classes are S4 objects
-			'FooClass', fields = c('string'), methods = list(
-				initialize = function() {
-					string <<- `Encoding<-`('\xC5\xD8', 'latin1')
-				}
-			)
-		),
 		S4_character = setClass(
 			'BarClass', contains = 'character', prototype = lat1str
 		)(),
@@ -105,4 +102,6 @@ for (v in if (Rversions[[1]] >= '3.5.0') 2:3 else 2) {
 	), v)))
 }
 
-if (file.exists(file.path('00_pkg_src', 'cacheR'))) stopCluster(cl)
+stopCluster(cl)
+
+if (fail) stop('Found hash differences between R versions')
