@@ -29,6 +29,8 @@ trace(serialize, quote(version <- 2), at = 1, print = FALSE)
 
 library(parallel)
 Sys.unsetenv('R_TESTS')
+# allow re-running the script manually
+if (exists(cl)) { stopCluster(cl); rm(cl) }
 cl <- structure(c(
 	makePSOCKcluster(1, rscript = Rscript.old),
 	# NB: old R can't run new R as a cluster worker
@@ -102,6 +104,7 @@ for (v in if (Rversions[[1]] >= '3.5.0') 2:3 else 2) {
 	), v)))
 }
 
-stopCluster(cl)
+# full clean up if running under R CMD check
+if (file.exists(file.path('..', '00_pkg_src', 'cacheR'))) stopCluster(cl)
 
 if (fail) stop('Found hash differences between R versions')
