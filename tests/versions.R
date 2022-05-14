@@ -30,7 +30,7 @@ trace(serialize, quote(version <- 2), at = 1, print = FALSE)
 library(parallel)
 Sys.unsetenv('R_TESTS')
 # allow re-running the script manually
-if (exists(cl)) { stopCluster(cl); rm(cl) }
+if (exists('cl')) { stopCluster(cl); rm(cl) }
 cl <- structure(c(
 	makePSOCKcluster(1, rscript = Rscript.old),
 	# NB: old R can't run new R as a cluster worker
