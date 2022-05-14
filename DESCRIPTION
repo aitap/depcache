@@ -1,9 +1,11 @@
 Package: cacheR
 Type: Package
-Title: What the package does (short line)
+Title: Cache R expressions, taking their dependencies into account
 Imports: codetools, methods
 Version: 0.1
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line).
+Authors@R: person('Ivan', 'Krylov', email = 'yourfault@somewhere.net',
+	role = c('aut', 'cre'))
+Description: Hash an expression with its dependencies and store its
+	value, reloading it from a file as long as both the expression and
+	its value stay the same.
 License: GPL (>= 3)
