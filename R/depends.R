@@ -8,7 +8,8 @@ dependencies <- function(expr, frame, skip) {
 			# handle generic calls and recurse
 			call = function(call, w) lapply(call, walkCode, w = w),
 			# handle leafs of the AST
-			leaf = function(l, w) if (is.symbol(l)) as.character(l)
+			leaf = function(l, w)
+				if (is.symbol(l) && l != '') as.character(l)
 		)
 	)))
 
