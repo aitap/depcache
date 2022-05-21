@@ -40,4 +40,7 @@ stopifnot(all.equal(o, character()))
 
 tools::assertWarning(x <- 1)
 
+# must not crash on missing values in the parse tree
+cache( volcano[,1] )
+
 unlink(cache.dir, recursive = TRUE)
