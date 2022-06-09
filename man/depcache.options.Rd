@@ -50,6 +50,8 @@ depcache.options(
     dependencies; parent environments are ignored. Typically, this means
     taking local variables as parts of the hash that determines the file
     name, but not loaded packages or \code{\link{attach}}ed datasets.
+    Setting this to \code{FALSE} may invalidate the cache next time a
+    package or \R itself is updated.
 
     Defaults to the \verb{depcache.local.only} option, or \code{TRUE} in
     \pkg{depcache} version 0.1.

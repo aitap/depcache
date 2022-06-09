@@ -7,8 +7,13 @@
   \packageDescription{depcache}
 }
 \details{
+  The functions in this package take an expression, walk its code to
+  find its dependencies and calculate a hash of them. If a corresponding
+  file already exists, it is loaded; otherwise, the expression is
+  evaluated and its value is saved in the file. Optionally, this check
+  may be performed every time a variable is accessed.
+
   \packageIndices{depcache}
-  \strong{TODO}: An overview of how to use the package, including the most important functions
 }
 \author{\packageAuthor{depcache}}
 \keyword{package}
@@ -26,6 +31,7 @@
   cache({message('evaluating expression'); a + 1}) # 2
   # will reuse cached value
   x \%<-\% { message('evaluating expression'); a + 1 } # 2
+  x
   a <- 2
   # will recalculate the value
   x # 3

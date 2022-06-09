@@ -1,4 +1,4 @@
-\name{\%->\%}
+\name{setCached}
 \alias{\%->\%}
 \alias{\%<-\%}
 \alias{setCached}
@@ -34,6 +34,14 @@
   value of \code{expr} any time its dependencies change, using
   \code{\link{makeActiveBinding}} and the same mechanisms that power
   \code{\link{cache}}.
+
+  Initially, \code{expr} is loaded from \code{\link{cache}} or
+  evaluated, and the hash is remembered. When the variable named by
+  \var{symbol} is accessed, its dependencies are hashed together with
+  \code{expr} (this may be done recursively if the dependencies are
+  themselves active bindings set up the same way). If the hash changes,
+  the value of \code{expr} is again loaded from \code{\link{cache}} (if
+  available) or evaluated anew.
 }
 \value{
   Returns the value of \code{expr}, invisibly. Called for the side
