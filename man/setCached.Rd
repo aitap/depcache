@@ -42,6 +42,10 @@
   themselves active bindings set up the same way). If the hash changes,
   the value of \code{expr} is again loaded from \code{\link{cache}} (if
   available) or evaluated anew.
+
+  To prevent infinite loops during dependency calculation, \var{symbol}
+  is automatically skipped, but a self-dependent \code{expr} is probably
+  a bad idea anyway.
 }
 \value{
   Returns the value of \code{expr}, invisibly. Called for the side

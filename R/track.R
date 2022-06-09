@@ -3,6 +3,7 @@ do.cachetrack <- function(symbol, expr, frame, extra, opts) {
 		'Cache-tracking assignment only works on plain variable names'
 	)
 	symbol <- as.character(symbol)
+	opts$skip <- c(opts$skip, symbol)
 
 	path <- get.filename(expr, frame, extra, opts)
 	val <- do.cache(expr, frame, extra, opts)
