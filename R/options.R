@@ -1,9 +1,9 @@
-.cacheR.version <- packageVersion('cacheR')
+.cacheR.version <- as.character(packageVersion('cacheR'))
 
 .defaults <- list(
 	'0.1' = list(
 		compress = TRUE,
-		local.only = FALSE,
+		local.only = TRUE,
 		format.version = 2
 	)
 )
