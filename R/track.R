@@ -1,18 +1,18 @@
-do.cachetrack <- function(symbol, expr, frame, skip, extra, ...) {
+do.cachetrack <- function(symbol, expr, frame, extra, opts) {
 	if (!is.symbol(symbol)) stop(
 		'Cache-tracking assignment only works on plain variable names'
 	)
 	symbol <- as.character(symbol)
 
-	hash <- get.filename(expr, frame, skip, extra, ...)
-	val <- do.cache(expr, frame, skip, extra, ...)
+	path <- get.filename(expr, frame, extra, opts)
+	val <- do.cache(expr, frame, extra, opts)
 
 	fun <- function(assignment) {
 		if (missing(assignment)) {
-			new.hash <- get.filename(expr, frame, skip, extra, ...)
-			if (new.hash != hash) {
-				val <<- do.cache(expr, frame, skip, extra, ...)
-				hash <<- new.hash
+			new.path <- get.filename(expr, frame, extra, opts)
+			if (new.path != path) {
+				val <<- do.cache(expr, frame, extra, opts)
+				path <<- new.path
 			}
 			val
 		} else {
@@ -34,16 +34,16 @@ do.cachetrack <- function(symbol, expr, frame, skip, extra, ...) {
 
 `%<-%` <- function(symbol, expr) do.cachetrack(
 	substitute(symbol), substitute(expr), parent.frame(),
-	NULL, quote(NULL)
+	quote(NULL), depcache.options()
 )
 
 `%->%` <- function(expr, symbol) do.cachetrack(
 	substitute(symbol), substitute(expr), parent.frame(),
-	NULL, quote(NULL)
+	quote(NULL), depcache.options()
 )
 
-setCached <- function(symbol, expr, skip = NULL, extra = NULL, ...)
+setCached <- function(symbol, expr, extra = NULL, ...)
 	do.cachetrack(
 		substitute(symbol), substitute(expr), parent.frame(),
-		skip, substitute(extra), ...
+		substitute(extra), depcache.options(...)
 	)

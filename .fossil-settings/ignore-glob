@@ -1,2 +1,2 @@
-cacheR.Rcheck
-cacheR_*.tar.gz
+*.Rcheck
+*.tar.gz

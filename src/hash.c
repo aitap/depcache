@@ -81,10 +81,12 @@ static SEXP hash(SEXP value, SEXP sver) {
 };
 
 static R_CallMethodDef call_methods[] = {
-	{"hash",       (DL_FUNC)&hash,       2},
+	{"hash", (DL_FUNC)&hash, 2},
 	{NULL, NULL, 0}
 };
 
-void R_init_cacheR(DllInfo *info) {
-   R_registerRoutines(info, NULL, call_methods, NULL, NULL);
+void R_init_depcache(DllInfo *info) {
+	R_registerRoutines(info, NULL, call_methods, NULL, NULL);
+	R_useDynamicSymbols(info, FALSE);
+	R_forceSymbols(info, TRUE);
 }
