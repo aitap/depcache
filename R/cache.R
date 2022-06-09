@@ -29,5 +29,5 @@ do.cache <- function(expr, frame, extra, opts) {
 }
 
 cache <- function(expr, extra = NULL, ...) do.cache(
-	substitute(expr), parent.frame(), substitute(extra), cacheR.options(...)
+	substitute(expr), parent.frame(), substitute(extra), depcache.options(...)
 )

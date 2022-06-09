@@ -1,4 +1,4 @@
-.cacheR.version <- as.character(packageVersion('cacheR'))
+.depcache.version <- as.character(packageVersion('depcache'))
 
 .defaults <- list(
 	'0.1' = list(
@@ -8,22 +8,22 @@
 	)
 )
 
-cacheR.options <- function(
-	defaults = getOption('cacheR.version', .cacheR.version),
-	dir = getOption('cacheR.dir', '.cache'),
-	skip = getOption('cacheR.skip', NULL),
+depcache.options <- function(
+	defaults = getOption('depcache.version', .depcache.version),
+	dir = getOption('depcache.dir', '.cache'),
+	skip = getOption('depcache.skip', NULL),
 	compress, local.only, format.version
 ) {
 	defaults <- .defaults[[match.arg(defaults, '0.1')]]
 
 	if (missing(compress)) compress <- getOption(
-		'cacheR.compress', defaults$compress
+		'depcache.compress', defaults$compress
 	)
 	if (missing(local.only)) local.only <- getOption(
-		'cacheR.local.only', defaults$local.only
+		'depcache.local.only', defaults$local.only
 	)
 	if (missing(format.version)) format.version <- getOption(
-		'cacheR.format.version',
+		'depcache.format.version',
 		defaults$format.version
 	)
 

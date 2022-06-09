@@ -1,6 +1,6 @@
-Package: cacheR
+Package: depcache
 Type: Package
-Title: Cache R Expressions, Taking Their Dependencies Into Account
+Title: Cache R Expressions, Taking Their Dependencies into Account
 Imports: codetools, methods
 Version: 0.1
 Authors@R: person('Ivan', 'Krylov', email = 'yourfault@somewhere.net',

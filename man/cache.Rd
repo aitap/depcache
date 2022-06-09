@@ -21,7 +21,7 @@
     \code{\link{md5sum}} to check for changes in it.
   }
   \item{\dots}{
-    Additional options, see \code{\link{cacheR.options}}.
+    Additional options, see \code{\link{depcache.options}}.
   }
 }
 \details{
@@ -67,8 +67,8 @@
 \seealso{\code{\link{setCached}}}
 \examples{
   \dontshow{
-    .cacheR.dir <- file.path(tempdir(), 'cacheR-example')
-    .op <- options(cacheR.dir = .cacheR.dir)
+    .depcache.dir <- file.path(tempdir(), 'depcache-example')
+    .op <- options(depcache.dir = .depcache.dir)
   }
   a <- 1
   # will evaluate the expression the first time
@@ -83,7 +83,7 @@
   # expression evaluated again because dependencies changed
   cache({message('evaluating expression'); a + 1}) # 0
   \dontshow{
-    unlink(.cacheR.dir, recursive = TRUE)
+    unlink(.depcache.dir, recursive = TRUE)
     options(.op)
   }
 }

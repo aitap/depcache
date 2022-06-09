@@ -1,8 +1,8 @@
 Rscript.old <- Sys.getenv('RSCRIPT_OLD_VERSION')
 Rscript.new <- Sys.getenv('RSCRIPT_NEW_VERSION')
-src <- Sys.getenv('CACHER_SRC')
+src <- Sys.getenv('PACKAGE_SRC')
 # if running in R CMD check, package source is available
-pkg <- if (nzchar(src)) src else file.path('..', '00_pkg_src', 'cacheR')
+pkg <- if (nzchar(src)) src else file.path('..', '00_pkg_src', 'depcache')
 
 if (!(
 	nzchar(Rscript.old) && nzchar(Rscript.new) &&
@@ -15,7 +15,7 @@ if (!(
 			'in RSCRIPT_{OLD,NEW}_VERSION (currently ',
 			deparse(c(Rscript.old, Rscript.new)), ')\n',
 		' - if not running this test from R CMD check, ',
-			'path to the package source in CACHER_SRC (currently ',
+			'path to the package source in PACKAGE_SRC (currently ',
 			deparse(src), '; exists(', deparse(pkg), ')=',
 			file.exists(pkg), ')'
 	)
@@ -44,7 +44,7 @@ stopifnot(Rversions[[1]] < Rversions[[2]])
 
 hash.all <- function(x, v, skip = NULL)
 	sapply(setNames(nm = setdiff(names(x), skip)), function(n)
-		cacheR:::hash(cacheR:::fixup(x[[n]]), v)
+		depcache:::hash(depcache:::fixup(x[[n]]), v)
 	)
 clusterExport(cl, c('pkg', 'hash.all'))
 clusterEvalQ(cl, {
@@ -54,7 +54,7 @@ clusterEvalQ(cl, {
 	.libPaths(lib)
 	install.packages(pkg, type = 'source', repos = NULL)
 
-	library(cacheR)
+	library(depcache)
 
 	# prepare objects for later check
 	recursive_env = new.env()
@@ -77,7 +77,7 @@ for (v in if (Rversions[[1]] >= '3.5.0') 2:3 else 2) {
 	message('Using serialization version ', v)
 	clusterExport(cl, 'v')
 	hashcmp(clusterEvalQ(cl, hash.all(
-		loadNamespace('cacheR'), v,
+		loadNamespace('depcache'), v,
 		c(
 			'C_hash', # $dll$path is different
 			'.__NAMESPACE__.' # $DLLs, $path contain paths
@@ -105,6 +105,6 @@ for (v in if (Rversions[[1]] >= '3.5.0') 2:3 else 2) {
 }
 
 # full clean up if running under R CMD check
-if (file.exists(file.path('..', '00_pkg_src', 'cacheR'))) stopCluster(cl)
+if (file.exists(file.path('..', '00_pkg_src', 'depcache'))) stopCluster(cl)
 
 if (fail) stop('Found hash differences between R versions')

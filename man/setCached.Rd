@@ -26,7 +26,7 @@
     it should be recalculated.
   }
   \item{\dots}{
-    Additional settings, see \code{\link{cacheR.options}}.
+    Additional settings, see \code{\link{depcache.options}}.
   }
 }
 \details{
@@ -44,8 +44,8 @@
 \seealso{\code{\link{cache}}, \code{\link{makeActiveBinding}}}
 \examples{
   \dontshow{
-    .cacheR.dir <- file.path(tempdir(), 'cacheR-example')
-    .op <- options(cacheR.dir = .cacheR.dir)
+    .depcache.dir <- file.path(tempdir(), 'depcache-example')
+    .op <- options(depcache.dir = .depcache.dir)
   }
   a <- 1
   # will evaluate the expression first
@@ -67,7 +67,7 @@
   a <- 0
   z # recalculates all three
   \dontshow{
-    unlink(.cacheR.dir, recursive = TRUE)
+    unlink(.depcache.dir, recursive = TRUE)
     options(.op)
   }
 }

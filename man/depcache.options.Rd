@@ -1,32 +1,32 @@
-\name{cacheR.options}
-\alias{cacheR.options}
+\name{depcache.options}
+\alias{depcache.options}
 \title{Caching options}
 \description{
   Control how the dependencies are gathered and hashed to locate the
   determine the file name to load the cached object from.
 }
 \usage{
-cacheR.options(
-  defaults = getOption("cacheR.version", .cacheR.version),
-  dir = getOption("cacheR.dir", ".cache"),
-  skip = getOption("cacheR.skip", NULL),
+depcache.options(
+  defaults = getOption("depcache.version", .depcache.version),
+  dir = getOption("depcache.dir", ".cache"),
+  skip = getOption("depcache.skip", NULL),
   compress, local.only, format.version
 )
 }
 \arguments{
   \item{defaults}{
-    A string containing the version of \pkg{cacheR} to get other
+    A string containing the version of \pkg{depcache} to get other
     defaults from. If not set, takes the value from the
-    \verb{cacheR.version} option (see \code{\link{options}}), falling
+    \verb{depcache.version} option (see \code{\link{options}}), falling
     back to the current version of the package.
 
     To make the caching more reproducible against package updates, call
-    \code{\link{options}(cacheR.version = \var{something})} once at the
+    \code{\link{options}(depcache.version = \var{something})} once at the
     top of your scripts.
   }
   \item{dir}{
     The directory to store the cache files inside. Defaults to the
-    \verb{cacheR.dir} option, or \file{.cache} if unset.
+    \verb{depcache.dir} option, or \file{.cache} if unset.
   }
   \item{skip}{
     A character vector of variables to omit from automatically-gathered
@@ -37,12 +37,12 @@ cacheR.options(
     (e.g. non-standard evaluation when plotting with \pkg{lattice}), or
     when the variable is being assigned to as part of the expression.
 
-    Defaults to the \verb{cacheR.skip} option, or \code{NULL} if unset.
+    Defaults to the \verb{depcache.skip} option, or \code{NULL} if unset.
   }
   \item{compress}{
     Passed as the \code{compress} option to \code{\link{saveRDS}} when
-    saving the cached objects. Defaults to the \verb{cacheR.compress}
-    option, or \code{TRUE} in \pkg{cacheR} version 0.1.
+    saving the cached objects. Defaults to the \verb{depcache.compress}
+    option, or \code{TRUE} in \pkg{depcache} version 0.1.
   }
   \item{local.only}{
     If \code{TRUE}, only variables available in the same environment
@@ -51,14 +51,14 @@ cacheR.options(
     taking local variables as parts of the hash that determines the file
     name, but not loaded packages or \code{\link{attach}}ed datasets.
 
-    Defaults to the \verb{cacheR.local.only} option, or \code{TRUE} in
-    \pkg{cacheR} version 0.1.
+    Defaults to the \verb{depcache.local.only} option, or \code{TRUE} in
+    \pkg{depcache} version 0.1.
   }
   \item{format.version}{
     Passed as the \code{version} argument to \code{\link{saveRDS}} and
     also used when serialising any objects to hash them. Only versions
     \verb{2} and \verb{3} are supported. Defaults to the
-    \verb{cacheR.format.version} option, or \verb{2} in \pkg{cacheR}
+    \verb{depcache.format.version} option, or \verb{2} in \pkg{depcache}
     version 0.1.
   }
 }
@@ -91,26 +91,26 @@ cacheR.options(
 \seealso{\code{\link{cache}}, \code{\link{setCached}}}
 \examples{
   \dontshow{
-    .cacheR.dir <- file.path(tempdir(), 'cacheR-example')
-    .op <- options(cacheR.dir = .cacheR.dir)
+    .depcache.dir <- file.path(tempdir(), 'depcache-example')
+    .op <- options(depcache.dir = .depcache.dir)
   }
   # The output is affected by the user's use of options(...) and the
   # current version of the package
-  options(cacheR.local.only = FALSE)
-  print(cacheR.options(format.version = 3))
-  options(cacheR.local.only = TRUE)
-  print(cacheR.options())
+  options(depcache.local.only = FALSE)
+  print(depcache.options(format.version = 3))
+  options(depcache.local.only = TRUE)
+  print(depcache.options())
 
   # "skip" makes it possible to avoid mistaking arguments evaluated in a
   # non-standard way for local variables
   speed <- 1
-  options(cacheR.skip = 'speed')
+  options(depcache.skip = 'speed')
   x \%<-\% { message('fitting the model'); lm(dist ~ speed, cars) }
   speed <- 0
   # not fitted again despite change in local variable "speed"
   summary(x)
   \dontshow{
-    unlink(.cacheR.dir, recursive = TRUE)
+    unlink(.depcache.dir, recursive = TRUE)
     options(.op)
   }
 }

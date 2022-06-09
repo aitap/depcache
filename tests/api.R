@@ -1,7 +1,7 @@
-library(cacheR)
+library(depcache)
 
 cache.dir <- file.path(tempdir(), 'cache')
-options(cacheR.dir = cache.dir)
+options(depcache.dir = cache.dir)
 
 # depends() previously crashed on expressions with no symbols
 x <- cache(1)
