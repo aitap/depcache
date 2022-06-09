@@ -32,7 +32,7 @@
     it should be recalculated.
   }
   \item{\dots}{
-    Additional settings. \strong{TODO}
+    Additional settings, see \code{\link{cacheR.options}}.
   }
 }
 \details{

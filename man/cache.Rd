@@ -29,7 +29,7 @@
     \code{\link{md5sum}} to check for changes in it.
   }
   \item{\dots}{
-    Additional options. \emph{TODO}: document cache settings.
+    Additional options, see \code{\link{cacheR.options}}.
   }
 }
 \details{
