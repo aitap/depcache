@@ -21,8 +21,8 @@ cacheR.options(
     back to the current version of the package.
 
     To make the caching more reproducible against package updates, call
-    \code{\link{options}(cacheR.version = "...")} once at the top of
-    your scripts.
+    \code{\link{options}(cacheR.version = \var{something})} once at the
+    top of your scripts.
   }
   \item{dir}{
     The directory to store the cache files inside. Defaults to the
@@ -32,9 +32,10 @@ cacheR.options(
     A character vector of variables to omit from automatically-gathered
     dependencies. Variables carrying unintended or unimportant state,
     which would otherwise interfere with obtaining a reproducible hash,
-    should be listed here. Potential examples include \pkg{parallel}
-    cluster objects, or anything else that might differ in hash between
-    executions of the script.
+    should be listed here. This may be useful when a symbol encountered
+    in the expression doesn't signify a variable in the evaluation frame
+    (e.g. non-standard evaluation when plotting with \pkg{lattice}), or
+    when the variable is being assigned to as part of the expression.
 
     Defaults to the \verb{cacheR.skip} option, or \code{NULL} if unset.
   }
@@ -89,8 +90,28 @@ cacheR.options(
 
 \seealso{\code{\link{cache}}, \code{\link{setCached}}}
 \examples{
+  \dontshow{
+    .cacheR.dir <- file.path(tempdir(), 'cacheR-example')
+    .op <- options(cacheR.dir = .cacheR.dir)
+  }
   # The output is affected by the user's use of options(...) and the
   # current version of the package
+  options(cacheR.local.only = FALSE)
+  print(cacheR.options(format.version = 3))
+  options(cacheR.local.only = TRUE)
   print(cacheR.options())
+
+  # "skip" makes it possible to avoid mistaking arguments evaluated in a
+  # non-standard way for local variables
+  speed <- 1
+  options(cacheR.skip = 'speed')
+  x \%<-\% { message('fitting the model'); lm(dist ~ speed, cars) }
+  speed <- 0
+  # not fitted again despite change in local variable "speed"
+  summary(x)
+  \dontshow{
+    unlink(.cacheR.dir, recursive = TRUE)
+    options(.op)
+  }
 }
 \keyword{utilities}

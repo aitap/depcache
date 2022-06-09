@@ -12,20 +12,25 @@
 }
 \author{\packageAuthor{cacheR}}
 \keyword{package}
+\references{
+  FNV-1a hash: \url{http://www.isthe.com/chongo/tech/comp/fnv}
+}
 \seealso{\code{\link{cache}}, \code{\link{\%<-\%}}}
-\examples{\dontrun{#TODO: real examples
-  x <- cache(long_running_operation()) # done once
-  x <- cache(long_running_operation()) # loaded from cache
-  y <- cache(f(x)) # again, done once
-  x <- something_else
-  y <- cache(f(x)) # re-calculated
-
-  # cache() can hash its argument and all its dependencies, but it can't
-  # easily associate a value with its source code.
-  x <- cache(do_x())
-  y <- cache(do_y(x))
-  z <- cache(do_z(y))
-  x <- cache(update_x())
-  # x has changed, but y hasn't. If we re-run the whole script, this
-  # won't matter.
-}}
+\examples{
+  \dontshow{
+    .cacheR.dir <- file.path(tempdir(), 'cacheR-example')
+    .op <- options(cacheR.dir = .cacheR.dir)
+  }
+  a <- 1
+  # will evaluate expression
+  cache({message('evaluating expression'); a + 1}) # 2
+  # will reuse cached value
+  x \%<-\% { message('evaluating expression'); a + 1 } # 2
+  a <- 2
+  # will recalculate the value
+  x # 3
+  \dontshow{
+    unlink(.cacheR.dir, recursive = TRUE)
+    options(.op)
+  }
+}

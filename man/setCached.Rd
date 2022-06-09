@@ -10,7 +10,7 @@
 \usage{
   symbol \%<-\% expr
   expr \%->\% symbol
-  setCached(symbol, expr, skip = NULL, extra = NULL, \dots)
+  setCached(symbol, expr, extra = NULL, \dots)
 }
 \arguments{
   \item{symbol}{
@@ -18,12 +18,6 @@
   }
   \item{expr}{
     The expression to cache, taking dependencies into account.
-  }
-  \item{skip}{
-    A character vector containing variable names to omit from the
-    automatically-determinted dependencies of an expression. Use it when
-    the automatic dependency process is overly eager and results in
-    unexpected recalculation.
   }
   \item{extra}{
     An unquoted expression to be considered an extra part of the state,
@@ -36,9 +30,10 @@
   }
 }
 \details{
-  \strong{TODO}: mention options (link to `cache`), describe how it
-  works (link to makeActiveBinding). Make sure to mention that it only
-  works on variable names and what happens when you overwrite it.
+  Sets up the variable \var{symbol} to automatically recalculate the
+  value of \code{expr} any time its dependencies change, using
+  \code{\link{makeActiveBinding}} and the same mechanisms that power
+  \code{\link{cache}}.
 }
 \value{
   Returns the value of \code{expr}, invisibly. Called for the side
@@ -54,11 +49,11 @@
   }
   a <- 1
   # will evaluate the expression first
-  x \%<-\% { message('side-effects'); a + 1 }
+  x \%<-\% { message('evaluating expression "x"'); a + 1 }
   x # 2
   # will reuse cached value
   {
-    message('side-effects')
+    message('evaluating expression "y"')
     a + 1
     # even if written a bit differently
   } \%->\% y
@@ -68,6 +63,9 @@
   x # 0
   # will load the new cached value
   y # 0
+  setCached(z, x + y)
+  a <- 0
+  z # recalculates all three
   \dontshow{
     unlink(.cacheR.dir, recursive = TRUE)
     options(.op)
