@@ -15,7 +15,7 @@
 
   \packageIndices{depcache}
 }
-\author{\packageAuthor{depcache}}
+\author{Ivan Krylov}
 \keyword{package}
 \references{
   FNV-1a hash: \url{http://www.isthe.com/chongo/tech/comp/fnv/}
@@ -28,7 +28,7 @@
   }
   a <- 1
   # will evaluate expression
-  cache({message('evaluating expression'); a + 1}) # 2
+  cache({ message('evaluating expression'); a + 1 }) # 2
   # will reuse cached value
   x \%<-\% { message('evaluating expression'); a + 1 } # 2
   x

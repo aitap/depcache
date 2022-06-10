@@ -72,7 +72,7 @@
   }
   a <- 1
   # will evaluate the expression the first time
-  cache({message('evaluating expression'); a + 1}) # 2
+  cache({ message('evaluating expression'); a + 1 }) # 2
   # saved value of the expression will be used
   cache({
     message('evaluating expression')
@@ -81,7 +81,7 @@
   }) # 2
   a <- -1
   # expression evaluated again because dependencies changed
-  cache({message('evaluating expression'); a + 1}) # 0
+  cache({ message('evaluating expression'); a + 1 }) # 0
   \dontshow{
     unlink(.depcache.dir, recursive = TRUE)
     options(.op)
