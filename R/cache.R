@@ -1,5 +1,3 @@
-# TODO: test the output of this function for existence of file in
-# various circumstances
 get.filename <- function(expr, frame, extra, opts) {
 	deps <- dependencies(expr, frame, opts)
 	filename <- hash(

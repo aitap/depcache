@@ -1,6 +1,3 @@
-# TODO: test the output of this function to make sure that all the right
-# variables are taken into account, but "skip" is honoured
-
 dependencies <- function(expr, frame, opts) {
 	# any symbol in the expression can be a dependency
 	symbols <- unname(unlist(walkCode(
