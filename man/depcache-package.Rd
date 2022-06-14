@@ -13,6 +13,9 @@
   evaluated and its value is saved in the file. Optionally, this check
   may be performed every time a variable is accessed.
 
+  By default, a subdirectory of the current directory is used to store
+  the cache files.
+
   \packageIndices{depcache}
 }
 \author{Ivan Krylov}
