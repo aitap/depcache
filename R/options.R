@@ -2,6 +2,7 @@
 
 .defaults <- list(
 	'0.1' = list(
+		dir = '.depcache',
 		compress = TRUE,
 		local.only = TRUE,
 		format.version = 2
@@ -10,22 +11,20 @@
 
 depcache.options <- function(
 	defaults = getOption('depcache.version', .depcache.version),
-	dir = getOption('depcache.dir', '.cache'),
 	skip = getOption('depcache.skip', NULL),
-	compress, local.only, format.version
+	dir, compress, local.only, format.version
 ) {
 	defaults <- .defaults[[match.arg(defaults, '0.1')]]
 
-	if (missing(compress)) compress <- getOption(
-		'depcache.compress', defaults$compress
-	)
-	if (missing(local.only)) local.only <- getOption(
-		'depcache.local.only', defaults$local.only
-	)
-	if (missing(format.version)) format.version <- getOption(
-		'depcache.format.version',
-		defaults$format.version
-	)
+	.getdefault <- function(var) {
+		if (!missing(var)) return(var)
+		name <- deparse(substitute(var))
+		getOption(paste0('depcache.', name), defaults[[name]])
+	}
+	dir            <- .getdefault(dir)
+	compress       <- .getdefault(compress)
+	local.only     <- .getdefault(local.only)
+	format.version <- .getdefault(format.version)
 
 	stopifnot(
 		is.character(dir), length(dir) == 1L,

@@ -8,9 +8,8 @@
 \usage{
 depcache.options(
   defaults = getOption("depcache.version", .depcache.version),
-  dir = getOption("depcache.dir", ".cache"),
   skip = getOption("depcache.skip", NULL),
-  compress, local.only, format.version
+  dir, compress, local.only, format.version
 )
 }
 \arguments{
@@ -24,10 +23,6 @@ depcache.options(
     \code{\link{options}(depcache.version = \var{something})} once at the
     top of your scripts.
   }
-  \item{dir}{
-    The directory to store the cache files inside. Defaults to the
-    \verb{depcache.dir} option, or \file{.cache} if unset.
-  }
   \item{skip}{
     A character vector of variables to omit from automatically-gathered
     dependencies. Variables carrying unintended or unimportant state,
@@ -38,6 +33,11 @@ depcache.options(
     when the variable is being assigned to as part of the expression.
 
     Defaults to the \verb{depcache.skip} option, or \code{NULL} if unset.
+  }
+  \item{dir}{
+    The directory to store the cache files inside. Defaults to the
+    \verb{depcache.dir} option, or \file{.depcache} in \pkg{depcache}
+    version 0.1.
   }
   \item{compress}{
     Passed as the \code{compress} option to \code{\link{saveRDS}} when
@@ -65,6 +65,12 @@ depcache.options(
   }
 }
 \details{
+  In all cases, explicitly passed arguments override settings from the
+  \code{\link{options}()}, which override the defaults. Depending on the
+  \code{defaults} argument or the \verb{depcache.version} option, the
+  defaults may change; setting it explicitly will help your scripts stay
+  forward-compatible.
+
   This function shouldn't be normally called by the user (except,
   perhaps, to verify the parameters about to be passed to the caching
   functions), but it is automatically invoked on every call to
