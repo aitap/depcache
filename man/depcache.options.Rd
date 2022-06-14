@@ -37,12 +37,12 @@ depcache.options(
   \item{dir}{
     The directory to store the cache files inside. Defaults to the
     \verb{depcache.dir} option, or \file{.depcache} in \pkg{depcache}
-    version 0.1.
+    version 0.1.1.
   }
   \item{compress}{
     Passed as the \code{compress} option to \code{\link{saveRDS}} when
     saving the cached objects. Defaults to the \verb{depcache.compress}
-    option, or \code{TRUE} in \pkg{depcache} version 0.1.
+    option, or \code{TRUE} in \pkg{depcache} version 0.1.1.
   }
   \item{local.only}{
     If \code{TRUE}, only variables available in the same environment
@@ -54,14 +54,14 @@ depcache.options(
     package or \R itself is updated.
 
     Defaults to the \verb{depcache.local.only} option, or \code{TRUE} in
-    \pkg{depcache} version 0.1.
+    \pkg{depcache} version 0.1.1.
   }
   \item{format.version}{
     Passed as the \code{version} argument to \code{\link{saveRDS}} and
     also used when serialising any objects to hash them. Only versions
     \verb{2} and \verb{3} are supported. Defaults to the
     \verb{depcache.format.version} option, or \verb{2} in \pkg{depcache}
-    version 0.1.
+    version 0.1.1.
   }
 }
 \details{
