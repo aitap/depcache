@@ -78,7 +78,7 @@ static SEXP hash(SEXP value, SEXP sver) {
 		RAW(ret)[i] = (Rbyte)(st.val >> (CHAR_BIT * (sizeof(st.val) - 1 - i)));
 	UNPROTECT(1);
 	return ret;
-};
+}
 
 static R_CallMethodDef call_methods[] = {
 	{"hash", (DL_FUNC)&hash, 2},
