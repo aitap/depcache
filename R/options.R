@@ -1,7 +1,5 @@
-.depcache.version <- as.character(packageVersion('depcache'))
-
 .defaults <- list(
-	'0.1.1' = list(
+	'0.1' = list(
 		dir = '.depcache',
 		compress = TRUE,
 		local.only = TRUE,
@@ -10,11 +8,11 @@
 )
 
 depcache.options <- function(
-	defaults = getOption('depcache.version', .depcache.version),
+	defaults = getOption('depcache.version', '0.1'),
 	skip = getOption('depcache.skip', NULL),
 	dir, compress, local.only, format.version
 ) {
-	defaults <- .defaults[[match.arg(defaults, '0.1.1')]]
+	defaults <- .defaults[[match.arg(defaults, names(.defaults))]]
 
 	.getdefault <- function(var) {
 		if (!missing(var)) return(var)

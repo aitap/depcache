@@ -7,7 +7,7 @@
 }
 \usage{
 depcache.options(
-  defaults = getOption("depcache.version", .depcache.version),
+  defaults = getOption("depcache.version", '0.1'),
   skip = getOption("depcache.skip", NULL),
   dir, compress, local.only, format.version
 )
@@ -22,6 +22,10 @@ depcache.options(
     To make the caching more reproducible against package updates, call
     \code{\link{options}(depcache.version = \var{something})} once at the
     top of your scripts.
+
+    Currently, only version \verb{0.1} is accepted. When a new version
+    of the package changes the defaults or adds new settings, the range
+    of the accepted values will expand.
   }
   \item{skip}{
     A character vector of variables to omit from automatically-gathered
@@ -37,12 +41,12 @@ depcache.options(
   \item{dir}{
     The directory to store the cache files inside. Defaults to the
     \verb{depcache.dir} option, or \file{.depcache} in \pkg{depcache}
-    version 0.1.1.
+    version 0.1.
   }
   \item{compress}{
     Passed as the \code{compress} option to \code{\link{saveRDS}} when
     saving the cached objects. Defaults to the \verb{depcache.compress}
-    option, or \code{TRUE} in \pkg{depcache} version 0.1.1.
+    option, or \code{TRUE} in \pkg{depcache} version 0.1.
   }
   \item{local.only}{
     If \code{TRUE}, only variables available in the same environment
@@ -54,14 +58,14 @@ depcache.options(
     package or \R itself is updated.
 
     Defaults to the \verb{depcache.local.only} option, or \code{TRUE} in
-    \pkg{depcache} version 0.1.1.
+    \pkg{depcache} version 0.1.
   }
   \item{format.version}{
     Passed as the \code{version} argument to \code{\link{saveRDS}} and
     also used when serialising any objects to hash them. Only versions
     \verb{2} and \verb{3} are supported. Defaults to the
     \verb{depcache.format.version} option, or \verb{2} in \pkg{depcache}
-    version 0.1.1.
+    version 0.1.
   }
 }
 \details{
