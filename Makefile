@@ -9,7 +9,7 @@ all: $(PACKAGE)
 
 .PHONY: check cran install
 
-$(PACKAGE): man/* R/* tests/* tests-dev/* src/* DESCRIPTION NAMESPACE .Rbuildignore
+$(PACKAGE): man/* R/* tests/* inst/* src/* DESCRIPTION NAMESPACE .Rbuildignore
 	$(R) CMD build .
 
 check: $(PACKAGE)
