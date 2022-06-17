@@ -1,8 +1,6 @@
 Rscript.old <- Sys.getenv('RSCRIPT_OLD_VERSION')
 Rscript.new <- Sys.getenv('RSCRIPT_NEW_VERSION')
-src <- Sys.getenv('PACKAGE_SRC')
-# if running in R CMD check, package source is available
-pkg <- if (nzchar(src)) src else file.path('..', '00_pkg_src', 'depcache')
+pkg <- Sys.getenv('PACKAGE_TGZ')
 
 if (!(
 	nzchar(Rscript.old) && nzchar(Rscript.new) &&
@@ -14,12 +12,10 @@ if (!(
 		' - paths to Rscript for 2 different versions of R ',
 			'in RSCRIPT_{OLD,NEW}_VERSION (currently ',
 			deparse(c(Rscript.old, Rscript.new)), ')\n',
-		' - if not running this test from R CMD check, ',
-			'path to the package source in PACKAGE_SRC (currently ',
-			deparse(src), '; exists(', deparse(pkg), ')=',
-			file.exists(pkg), ')'
+		' - path to the package tarball in PACKAGE_TGZ; ',
+			'file.exists(', deparse(pkg), ') = ', file.exists(pkg)
 	)
-	q('no')
+	stop()
 }
 
 # R cluster protocol works on the serialization format. Old versions of
@@ -28,6 +24,7 @@ if (!(
 trace(serialize, quote(version <- 2), at = 1, print = FALSE)
 
 library(parallel)
+# prevent child processes from running the test suite again
 Sys.unsetenv('R_TESTS')
 # allow re-running the script manually
 if (exists('cl')) { stopCluster(cl); rm(cl) }
@@ -52,7 +49,7 @@ clusterEvalQ(cl, {
 	lib <- tempfile()
 	dir.create(lib)
 	.libPaths(lib)
-	install.packages(pkg, type = 'source', repos = NULL)
+	install.packages(pkg)
 
 	library(depcache)
 
